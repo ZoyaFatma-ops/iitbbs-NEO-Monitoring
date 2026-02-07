@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import {  AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
     Radar,
@@ -88,6 +89,25 @@ const SidebarContent = ({ activeView, setActiveView, user, collapsed, setCollaps
 
                     {!collapsed && (
                         <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 whitespace-nowrap">
+        <motion.aside
+            initial={false}
+            animate={{ width: collapsed ? 80 : 280 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="h-screen bg-black/40 backdrop-blur-xl border-r border-white/10 flex flex-col fixed left-0 top-0 z-40"
+        >
+            {/* Logo */}
+            <div className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500 to-purple-600 flex items-center justify-center shrink-0">
+                    <Rocket className="w-6 h-6 text-white" />
+                </div>
+                <AnimatePresence>
+                    {!collapsed && (
+                        <motion.span
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-purple-500"
+                        >
                             SkyNetics
                         </span>
                     )}
@@ -139,6 +159,24 @@ const SidebarContent = ({ activeView, setActiveView, user, collapsed, setCollaps
                                 <span className="font-medium whitespace-nowrap">
                                     {item.label}
                                 </span>
+                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-cyan-400' : ''}`} />
+                            <AnimatePresence>
+                                {!collapsed && (
+                                    <motion.span
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -10 }}
+                                        className="font-medium"
+                                    >
+                                        {item.label}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            {isActive && !collapsed && (
+                                <motion.div
+                                    layoutId="activeIndicator"
+                                    className="ml-auto w-2 h-2 rounded-full bg-cyan-400"
+                                />
                             )}
                         </Button>
                     );
@@ -156,6 +194,7 @@ const SidebarContent = ({ activeView, setActiveView, user, collapsed, setCollaps
                     <Avatar className="w-9 h-9 border border-cyan-500/30">
                         <AvatarImage src={user?.avatar} />
                         <AvatarFallback className="bg-gradient-to-br from-cyan-600 to-purple-600 text-white font-bold text-xs">
+                        <AvatarFallback className="bg-linear-to-br from-cyan-600 to-purple-600 text-white font-bold">
                             {user?.name?.charAt(0) || 'U'}
                         </AvatarFallback>
                     </Avatar>

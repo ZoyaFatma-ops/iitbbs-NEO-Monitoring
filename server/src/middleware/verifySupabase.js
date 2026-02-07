@@ -1,5 +1,5 @@
-const { getSupabaseClient } = require('../lib/supabase');
-const { InvalidTokenError, UnauthorizedError } = require('../errors/appError');
+import { getSupabaseClient } from '../lib/supabase.js';
+import { InvalidTokenError, UnauthorizedError } from '../errors/appError.js';
 
 const verifySupabase = async (req, res, next) => {
   try {
@@ -29,4 +29,4 @@ const verifySupabase = async (req, res, next) => {
   }
 };
 
-module.exports = verifySupabase;
+export default verifySupabase;

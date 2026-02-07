@@ -143,7 +143,7 @@ const DashboardLayout = () => {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Background gradient effects */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px]" />
+        <div className="absolute top-0 left-1/4 w-150 h-[600px] bg-purple-600/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]" />
       </div>
 

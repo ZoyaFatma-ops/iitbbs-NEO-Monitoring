@@ -39,7 +39,7 @@ class ValidationError extends AppError {
   }
 }
 
-module.exports = {
+export {
   AppError,
   InvalidTokenError,
   UnauthorizedError,

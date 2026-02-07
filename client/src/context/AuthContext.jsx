@@ -84,23 +84,23 @@ const AuthProvider = ({ children }) => {
   };
 
   const continueWithGoogle = async () => {
-    try{
+    try {
       setLoading(true);
-      const { error} = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "/home"
+          redirectTo: `${window.location.origin}/auth`
         },
       });
 
-      if(error){
-        return { success: false, error:error.message};
+      if (error) {
+        return { success: false, error: error.message };
       }
-      return { success: true}
+      return { success: true }
 
-    } catch{
-      return { success: false, error:"An unexpected error occured"};
-    }finally{
+    } catch {
+      return { success: false, error: "An unexpected error occured" };
+    } finally {
       setLoading(false);
     }
   }

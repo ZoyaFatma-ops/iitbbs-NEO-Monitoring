@@ -1,12 +1,13 @@
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const dotenv = require('dotenv');
-const verifySupabase = require('./middleware/verifySupabase');
-const errorHandler = require('./middleware/errorHandler');
-const { NotFoundError } = require('./errors/appError');
+import express from 'express';
+import http from 'node:http';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import verifySupabase from './middleware/verifySupabase.js';
+import errorHandler from './middleware/errorHandler.js';
+import { NotFoundError } from './errors/appError.js';
+import neoRoutes from './routes/neoRoutes.js';
 
 dotenv.config();
 
@@ -36,6 +37,9 @@ app.get('/api/me', verifySupabase, (req, res) => {
   });
 });
 
+// NEO data routes
+app.use('/api/neos', neoRoutes);
+
 // 404 handler for unmatched routes
 app.use((req, res, next) => {
   next(new NotFoundError());
@@ -50,4 +54,4 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-module.exports = { app, server };
+export { app, server };

@@ -1,52 +1,47 @@
-const { Prisma } = require('@prisma/client');
-const { AppError } = require('../errors/appError');
+import { AppError } from '../errors/appError.js';
 
-const mapPrismaKnownError = (err) => {
-  switch (err.code) {
-    case 'P2002':
-      return new AppError('Duplicate value for unique field', 409, 'PRISMA_UNIQUE', {
-        target: err.meta?.target,
+/**
+ * Maps Supabase/PostgreSQL error codes to AppError instances
+ */
+const mapSupabaseError = (err) => {
+  // PostgreSQL error codes commonly returned by Supabase
+  const code = err.code || err.details?.code;
+
+  switch (code) {
+    case '23505': // unique_violation
+      return new AppError('Duplicate value for unique field', 409, 'DB_UNIQUE_VIOLATION', {
+        detail: err.details || err.message,
       });
-    case 'P2004':
-      return new AppError('Database constraint failed', 400, 'PRISMA_CONSTRAINT');
-    case 'P2003':
-      return new AppError('Invalid relation reference', 400, 'PRISMA_FOREIGN_KEY', {
-        field: err.meta?.field_name,
+    case '23503': // foreign_key_violation
+      return new AppError('Invalid relation reference', 400, 'DB_FOREIGN_KEY', {
+        detail: err.details || err.message,
       });
-    case 'P2025':
-      return new AppError('Record not found', 404, 'PRISMA_NOT_FOUND');
-    case 'P2001':
-      return new AppError('Record not found', 404, 'PRISMA_NOT_FOUND');
-    case 'P2016':
-      return new AppError('Query returned no results', 404, 'PRISMA_NO_RESULT');
-    case 'P2017':
-      return new AppError('Records for relation are not connected', 400, 'PRISMA_RELATION');
-    case 'P2014':
-      return new AppError('Invalid relation', 400, 'PRISMA_RELATION');
-    case 'P2019':
-      return new AppError('Invalid input', 400, 'PRISMA_INPUT');
-    case 'P2021':
-      return new AppError('Table does not exist', 500, 'PRISMA_TABLE_MISSING');
-    case 'P2022':
-      return new AppError('Column does not exist', 500, 'PRISMA_COLUMN_MISSING');
-    case 'P2034':
-      return new AppError('Transaction failed due to a write conflict', 409, 'PRISMA_TX_CONFLICT');
+    case '23502': // not_null_violation
+      return new AppError('Required field is missing', 400, 'DB_NOT_NULL');
+    case '42P01': // undefined_table
+      return new AppError('Table does not exist', 500, 'DB_TABLE_MISSING');
+    case '42703': // undefined_column
+      return new AppError('Column does not exist', 500, 'DB_COLUMN_MISSING');
+    case 'PGRST116': // Supabase: no rows returned
+      return new AppError('Record not found', 404, 'DB_NOT_FOUND');
     default:
-      return new AppError('Database error', 500, 'PRISMA_ERROR', {
-        code: err.code,
-      });
+      return null;
   }
 };
 
 const errorHandler = (err, req, res, next) => {
   let finalError = err;
 
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    finalError = mapPrismaKnownError(err);
-  } else if (err instanceof Prisma.PrismaClientValidationError) {
-    finalError = new AppError('Invalid database input', 400, 'PRISMA_VALIDATION');
-  } else if (err instanceof Prisma.PrismaClientInitializationError) {
-    finalError = new AppError('Database connection failed', 500, 'PRISMA_INIT');
+  // Handle Supabase/PostgreSQL errors
+  if (err.code && !err.statusCode) {
+    const mappedError = mapSupabaseError(err);
+    if (mappedError) {
+      finalError = mappedError;
+    } else {
+      finalError = new AppError('Database error', 500, 'DB_ERROR', {
+        code: err.code,
+      });
+    }
   } else if (!(err instanceof AppError)) {
     finalError = new AppError('Internal server error', 500, 'INTERNAL_SERVER_ERROR');
   }
@@ -63,4 +58,4 @@ const errorHandler = (err, req, res, next) => {
   res.status(finalError.statusCode || 500).json(payload);
 };
 
-module.exports = errorHandler;
+export default errorHandler;

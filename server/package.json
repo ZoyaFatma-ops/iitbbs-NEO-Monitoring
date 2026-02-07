@@ -6,22 +6,16 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev",
-    "prisma:studio": "npx prisma studio",
-    "postinstall": "npx prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
-    "nodemon": "^3.1.11",
-    "prisma": "^7.3.0"
+    "nodemon": "^3.1.11"
   },
   "dependencies": {
-    "@prisma/client": "^7.3.0",
     "@supabase/supabase-js": "^2.50.0",
     "axios": "^1.13.4",
     "bcryptjs": "^3.0.3",
@@ -33,6 +27,7 @@
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "node-cron": "^4.2.1",
+    "pg": "^8.18.0",
     "socket.io": "^4.8.3"
   }
 }
