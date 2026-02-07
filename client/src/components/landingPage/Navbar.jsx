@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import { Rocket, Menu, X } from 'lucide-react';
+import React from 'react';
+import { Rocket, Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <nav className="fixed w-full z-50 bg-black/20 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,43 +23,50 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <a href="#" className="hover:text-cyan-400 text-white transition-colors duration-200 text-sm font-medium">Home</a>
-              <a href="#features" className="hover:text-cyan-400 text-gray-300 transition-colors duration-200 text-sm font-medium">Features</a>
-              <a href="#community" className="hover:text-cyan-400 text-gray-300 transition-colors duration-200 text-sm font-medium">Community</a>
-              <a 
-                href="/auth" 
-                className="bg-cyan-600/90 hover:bg-cyan-500 text-white px-5 py-2 rounded-full font-medium transition-all transform hover:scale-105 shadow-lg shadow-cyan-500/20 border border-cyan-400/20 inline-block"
-              >
-                Login / Register
-              </a>
+              <Button variant="link" asChild className="text-white hover:text-cyan-400 no-underline hover:no-underline p-0 h-auto text-sm font-medium">
+                <a href="#">Home</a>
+              </Button>
+              <Button variant="link" asChild className="text-gray-300 hover:text-cyan-400 no-underline hover:no-underline p-0 h-auto text-sm font-medium">
+                <a href="#features">Features</a>
+              </Button>
+              <Button variant="link" asChild className="text-gray-300 hover:text-cyan-400 no-underline hover:no-underline p-0 h-auto text-sm font-medium">
+                <a href="#community">Community</a>
+              </Button>
+              <Button asChild className="bg-cyan-600/90 hover:bg-cyan-500 text-white px-5 py-2 rounded-full font-medium shadow-lg shadow-cyan-500/20 border border-cyan-400/20 transform hover:scale-105 transition-all h-auto">
+                <a href="/auth">Login / Register</a>
+              </Button>
             </div>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu - Sheet */}
           <div className="-mr-2 flex md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-300 hover:text-white p-2 rounded-md"
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-transparent">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-black/95 backdrop-blur-xl border-white/10 w-72">
+                <SheetTitle className="text-white sr-only">Navigation</SheetTitle>
+                <div className="flex flex-col space-y-2 mt-8">
+                  <Button variant="ghost" asChild className="justify-start text-gray-300 hover:text-cyan-400 hover:bg-transparent text-base font-medium">
+                    <a href="#">Home</a>
+                  </Button>
+                  <Button variant="ghost" asChild className="justify-start text-gray-300 hover:text-cyan-400 hover:bg-transparent text-base font-medium">
+                    <a href="#features">Features</a>
+                  </Button>
+                  <Button variant="ghost" asChild className="justify-start text-gray-300 hover:text-cyan-400 hover:bg-transparent text-base font-medium">
+                    <a href="#community">Community</a>
+                  </Button>
+                  <Button asChild className="mt-2 bg-cyan-600/20 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-600/30 text-base font-medium justify-start h-auto py-2">
+                    <a href="/auth">Login</a>
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="#" className="text-gray-300 hover:text-cyan-400 block px-3 py-2 rounded-md text-base font-medium">Home</a>
-            <a href="#features" className="text-gray-300 hover:text-cyan-400 block px-3 py-2 rounded-md text-base font-medium">Features</a>
-            <a href="#community" className="text-gray-300 hover:text-cyan-400 block px-3 py-2 rounded-md text-base font-medium">Community</a>
-            <button className="w-full text-left mt-2 bg-cyan-600/20 text-cyan-400 border border-cyan-500/50 hover:bg-cyan-600/30 block px-3 py-2 rounded-md text-base font-medium transition-colors">
-              Login
-            </button>
-          </div>
-        </div>
-      )}
     </nav>
   );
 };

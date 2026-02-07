@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 const Hero = () => {
   return (
@@ -15,16 +18,16 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="flex flex-col items-center"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 hover:bg-white/10 transition-colors backdrop-blur-md cursor-pointer group">
+          <Badge variant="outline" className="mb-8 px-4 py-1.5 rounded-full bg-white/5 border-white/10 hover:bg-white/10 backdrop-blur-md cursor-pointer group text-sm font-medium gap-2">
             <div className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
             </div>
-            <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+            <span className="text-gray-300 group-hover:text-white transition-colors">
               Impact Alert: Asteroid 2024 XR Passed Safely
             </span>
             <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
-          </div>
+          </Badge>
           
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight leading-tight">
             Watch The <br />
@@ -39,17 +42,18 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <button className="group relative flex items-center justify-center gap-2 bg-white text-black px-8 py-4 rounded-xl font-bold text-lg transition-all hover:bg-gray-200">
+            <Button className="group relative bg-white text-black px-8 py-4 rounded-xl font-bold text-lg h-auto hover:bg-gray-200">
               Launch Tracker
               <RocketIcon className="w-5 h-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
-            </button>
-            <button className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all backdrop-blur-md">
+            </Button>
+            <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 text-white px-8 py-4 rounded-xl font-bold text-lg h-auto backdrop-blur-md">
               <Globe className="w-5 h-5" />
               Interactive Map
-            </button>
+            </Button>
           </div>
 
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center border-t border-white/10 pt-8 w-full">
+          <Separator className="mt-16 bg-white/10" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center pt-8 w-full">
             <StatItem number="25,000+" label="NEOs Tracked" />
             <StatItem number="1.2M" label="Data Points/Day" />
             <StatItem number="0.05s" label="Latency" />

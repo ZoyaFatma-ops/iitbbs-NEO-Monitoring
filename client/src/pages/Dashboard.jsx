@@ -4,6 +4,7 @@ import StatsOverview from '../components/dashboard/StatsOverview';
 import AsteroidFeed from '../components/dashboard/AsteroidFeed';
 import StarBackground from '../components/landingPage/StarBackground';
 import { Routes, Route } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const DashboardLayout = () => {
   return (
@@ -21,8 +22,7 @@ const DashboardLayout = () => {
             <p className="text-gray-400 text-sm">Welcome back, Commander.</p>
           </div>
           <div className="md:hidden">
-            {/* Mobile menu trigger placeholder */}
-            <button className="text-white">Menu</button>
+            <Button variant="ghost" className="text-white">Menu</Button>
           </div>
         </header>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Radar, ShieldAlert, Zap, Layers } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 const features = [
   {
@@ -46,17 +47,22 @@ const Features = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/30 hover:bg-white/10 transition-all group backdrop-blur-sm"
             >
-              <div className="mb-6 p-4 rounded-full bg-white/5 w-fit group-hover:scale-110 transition-transform duration-300">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
-                {feature.title}
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
-              </p>
+              <Card className="p-8 rounded-2xl bg-white/5 border-white/10 hover:border-cyan-500/30 hover:bg-white/10 hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] transition-all duration-300 group backdrop-blur-sm shadow-none gap-0">
+                <CardHeader className="p-0 mb-6">
+                  <div className="p-4 rounded-full bg-white/5 w-fit group-hover:scale-110 transition-transform duration-300">
+                    {feature.icon}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <CardTitle className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription className="text-gray-400 leading-relaxed text-sm">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
