@@ -9,7 +9,7 @@ import NeoDetailPanel from '@/components/dashboard/NeoDetailPanel';
 import Watchlist from '@/components/dashboard/Watchlist';
 import AlertsPanel from '@/components/dashboard/AlertsPanel';
 import { useAuth } from '@/context/AuthContext';
-import { fetchNeoFeed, fetchAlerts } from '@/services/api';
+import { fetchNeoFeed, fetchAlerts, fetchNeoSummary } from '@/services/api';
 
 // ─── Lazy-load heavy dashboard views ─────────────────────
 const OrbitViewer = lazy(() => import('@/components/dashboard/OrbitViewer'));
@@ -35,6 +35,7 @@ const DashboardLayout = () => {
   const [activeView, setActiveView] = useState('overview');
   const [neoData, setNeoData] = useState(null);
   const [alerts, setAlerts] = useState([]);
+  const [riskSummary, setRiskSummary] = useState(null);
   const [selectedNeo, setSelectedNeo] = useState(null);
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,13 +68,15 @@ const DashboardLayout = () => {
       setError(null);
       const { start, end } = getDateRange();
 
-      const [feedData, alertsData] = await Promise.all([
+      const [feedData, alertsData, summaryData] = await Promise.all([
         fetchNeoFeed(start, end, { page, limit: pageSize }),
         fetchAlerts(start, end),
+        fetchNeoSummary(start, end),
       ]);
 
       setNeoData(feedData);
       setAlerts(alertsData.alerts || []);
+      setRiskSummary(summaryData);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
       setError(err.message);
@@ -189,7 +192,7 @@ const DashboardLayout = () => {
                 />
               </div>
               <div>
-                <RiskAnalysisPanel neoData={neoData} />
+                <RiskAnalysisPanel neoData={neoData} riskSummary={riskSummary} />
               </div>
             </div>
           </div>
@@ -215,7 +218,7 @@ const DashboardLayout = () => {
               onView={handleSelectNeo}
               onRemove={handleRemoveFromWatchlist}
             />
-            <RiskAnalysisPanel neoData={neoData} />
+            <RiskAnalysisPanel neoData={neoData} riskSummary={riskSummary} />
           </div>
         );
 
