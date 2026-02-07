@@ -35,7 +35,7 @@ const Features = () => {
             Advanced Monitoring Capabilities
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-            Cosmic Watch empowers researchers and enthusiasts with professional-grade tools for astronomical analysis.
+            SkyNetics empowers researchers and enthusiasts with professional-grade tools for astronomical analysis.
           </p>
         </div>
 
@@ -48,7 +48,9 @@ const Features = () => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="p-8 rounded-2xl bg-white/5 border-white/10 hover:border-cyan-500/30 hover:bg-white/10 hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] transition-all duration-300 group backdrop-blur-sm shadow-none gap-0">
+              <Card className="p-8 rounded-2xl bg-white/5 border-white/10 hover:border-cyan-500/30 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(0,240,255,0.9),0_0_20px_rgba(0,200,255,0.8),0_0_30px_rgba(0,180,255,0.6)]
+
+ transition-all duration-300 group backdrop-blur-sm shadow-none gap-0 hover:-translate-y-5">
                 <CardHeader className="p-0 mb-6">
                   <div className="p-4 rounded-full bg-white/5 w-fit group-hover:scale-110 transition-transform duration-300">
                     {feature.icon}

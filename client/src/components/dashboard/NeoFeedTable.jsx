@@ -1,0 +1,298 @@
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Search,
+    Filter,
+    Eye,
+    Star,
+    AlertTriangle,
+    ChevronUp,
+    ChevronDown,
+    ExternalLink
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+const NeoFeedTable = ({ neoData, onSelectNeo, onAddToWatchlist }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterHazardous, setFilterHazardous] = useState('all');
+    const [sortConfig, setSortConfig] = useState({ key: 'distance', direction: 'asc' });
+
+    const neos = neoData?.neo_objects || [];
+
+    const filteredAndSortedNeos = useMemo(() => {
+        let result = [...neos];
+
+        // Filter by search term
+        if (searchTerm) {
+            result = result.filter(neo =>
+                neo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                neo.id.includes(searchTerm)
+            );
+        }
+
+        // Filter by hazardous status
+        if (filterHazardous === 'hazardous') {
+            result = result.filter(neo => neo.is_potentially_hazardous);
+        } else if (filterHazardous === 'safe') {
+            result = result.filter(neo => !neo.is_potentially_hazardous);
+        }
+
+        // Sort
+        result.sort((a, b) => {
+            let aVal, bVal;
+
+            switch (sortConfig.key) {
+                case 'name':
+                    aVal = a.name;
+                    bVal = b.name;
+                    break;
+                case 'diameter':
+                    aVal = a.estimated_diameter.max_m;
+                    bVal = b.estimated_diameter.max_m;
+                    break;
+                case 'velocity':
+                    aVal = a.close_approach_data[0]?.relative_velocity?.km_per_sec || 0;
+                    bVal = b.close_approach_data[0]?.relative_velocity?.km_per_sec || 0;
+                    break;
+                case 'distance':
+                default:
+                    aVal = a.close_approach_data[0]?.miss_distance?.lunar || Infinity;
+                    bVal = b.close_approach_data[0]?.miss_distance?.lunar || Infinity;
+            }
+
+            if (sortConfig.direction === 'asc') {
+                return aVal > bVal ? 1 : -1;
+            } else {
+                return aVal < bVal ? 1 : -1;
+            }
+        });
+
+        return result;
+    }, [neos, searchTerm, filterHazardous, sortConfig]);
+
+    const handleSort = (key) => {
+        setSortConfig(prev => ({
+            key,
+            direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    const SortIcon = ({ column }) => {
+        if (sortConfig.key !== column) return null;
+        return sortConfig.direction === 'asc'
+            ? <ChevronUp className="w-4 h-4" />
+            : <ChevronDown className="w-4 h-4" />;
+    };
+
+    return (
+        <Card className="bg-white/5 border-white/10 backdrop-blur-md">
+            <CardHeader className="pb-4">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                        NEO Live Feed
+                    </CardTitle>
+
+                    <div className="flex items-center gap-3">
+                        {/* Search */}
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                            <Input
+                                placeholder="Search by name or ID..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-48 lg:w-64 pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                            />
+                        </div>
+
+                        {/* Filter */}
+                        <div className="flex items-center gap-1 bg-white/5 rounded-lg p-1">
+                            <Button
+                                size="sm"
+                                variant={filterHazardous === 'all' ? 'default' : 'ghost'}
+                                onClick={() => setFilterHazardous('all')}
+                                className={filterHazardous === 'all' ? 'bg-white/10 text-white' : 'text-gray-400'}
+                            >
+                                All
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant={filterHazardous === 'hazardous' ? 'default' : 'ghost'}
+                                onClick={() => setFilterHazardous('hazardous')}
+                                className={filterHazardous === 'hazardous' ? 'bg-red-500/20 text-red-400' : 'text-gray-400'}
+                            >
+                                <AlertTriangle className="w-3 h-3 mr-1" />
+                                Hazardous
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant={filterHazardous === 'safe' ? 'default' : 'ghost'}
+                                onClick={() => setFilterHazardous('safe')}
+                                className={filterHazardous === 'safe' ? 'bg-green-500/20 text-green-400' : 'text-gray-400'}
+                            >
+                                Safe
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </CardHeader>
+
+            <CardContent>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-white/10">
+                                <th
+                                    className="text-left py-3 px-4 text-gray-400 font-medium text-sm cursor-pointer hover:text-white"
+                                    onClick={() => handleSort('name')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        Name <SortIcon column="name" />
+                                    </div>
+                                </th>
+                                <th
+                                    className="text-left py-3 px-4 text-gray-400 font-medium text-sm cursor-pointer hover:text-white"
+                                    onClick={() => handleSort('diameter')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        Diameter (m) <SortIcon column="diameter" />
+                                    </div>
+                                </th>
+                                <th
+                                    className="text-left py-3 px-4 text-gray-400 font-medium text-sm cursor-pointer hover:text-white"
+                                    onClick={() => handleSort('velocity')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        Velocity (km/s) <SortIcon column="velocity" />
+                                    </div>
+                                </th>
+                                <th
+                                    className="text-left py-3 px-4 text-gray-400 font-medium text-sm cursor-pointer hover:text-white"
+                                    onClick={() => handleSort('distance')}
+                                >
+                                    <div className="flex items-center gap-1">
+                                        Miss Distance <SortIcon column="distance" />
+                                    </div>
+                                </th>
+                                <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Status</th>
+                                <th className="text-right py-3 px-4 text-gray-400 font-medium text-sm">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <AnimatePresence>
+                                {filteredAndSortedNeos.slice(0, 15).map((neo, index) => {
+                                    const approach = neo.close_approach_data[0];
+                                    const isHazardous = neo.is_potentially_hazardous;
+
+                                    return (
+                                        <motion.tr
+                                            key={neo.id}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 20 }}
+                                            transition={{ delay: index * 0.03 }}
+                                            className={`border-b border-white/5 hover:bg-white/5 transition-colors ${isHazardous ? 'bg-red-500/5' : ''
+                                                }`}
+                                        >
+                                            <td className="py-4 px-4">
+                                                <div className="flex items-center gap-2">
+                                                    {isHazardous && (
+                                                        <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                                    )}
+                                                    <div>
+                                                        <p className="text-white font-medium text-sm">
+                                                            {neo.name.replace(/[()]/g, '')}
+                                                        </p>
+                                                        <p className="text-gray-500 text-xs">ID: {neo.id}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <span className="text-gray-300 text-sm">
+                                                    {neo.estimated_diameter.min_m.toFixed(0)} - {neo.estimated_diameter.max_m.toFixed(0)}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <span className="text-gray-300 text-sm">
+                                                    {approach?.relative_velocity?.km_per_sec?.toFixed(2) || '—'}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <div>
+                                                    <span className="text-gray-300 text-sm">
+                                                        {approach?.miss_distance?.lunar?.toFixed(2)} LD
+                                                    </span>
+                                                    <p className="text-gray-500 text-xs">
+                                                        {(approach?.miss_distance?.kilometers / 1000000)?.toFixed(2)}M km
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <Badge
+                                                    variant="outline"
+                                                    className={isHazardous
+                                                        ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                                                        : 'bg-green-500/20 border-green-500/50 text-green-400'
+                                                    }
+                                                >
+                                                    {isHazardous ? 'Hazardous' : 'Safe'}
+                                                </Badge>
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() => onSelectNeo?.(neo)}
+                                                        className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() => onAddToWatchlist?.(neo)}
+                                                        className="text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10"
+                                                    >
+                                                        <Star className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        asChild
+                                                        className="text-gray-400 hover:text-white hover:bg-white/10"
+                                                    >
+                                                        <a href={neo.nasa_jpl_url} target="_blank" rel="noopener noreferrer">
+                                                            <ExternalLink className="w-4 h-4" />
+                                                        </a>
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    );
+                                })}
+                            </AnimatePresence>
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Results count */}
+                <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                    <p className="text-gray-500 text-sm">
+                        Showing {Math.min(15, filteredAndSortedNeos.length)} of {filteredAndSortedNeos.length} asteroids
+                    </p>
+                    {filteredAndSortedNeos.length > 15 && (
+                        <Button variant="outline" size="sm" className="text-gray-400 border-white/10 hover:bg-white/5">
+                            Load More
+                        </Button>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
+export default NeoFeedTable;

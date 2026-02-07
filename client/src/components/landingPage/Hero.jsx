@@ -28,25 +28,26 @@ const Hero = () => {
             </span>
             <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
           </Badge>
-          
+
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight leading-tight">
             Watch The <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">
               Skies Above
             </span>
           </h1>
-          
+
           <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            The most advanced real-time Near-Earth Object monitoring platform. 
+            The most advanced real-time Near-Earth Object monitoring platform.
             Translate complex NASA data into actionable insights for safety and science.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Button className="group relative bg-white text-black px-8 py-4 rounded-xl font-bold text-lg h-auto hover:bg-gray-200">
               Launch Tracker
               <RocketIcon className="w-5 h-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
             </Button>
-            <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 text-white px-8 py-4 rounded-xl font-bold text-lg h-auto backdrop-blur-md">
+            <Button variant="outline" className="bg-white/5 border-white/10 hover:shadow-[8px_0_30px_rgba(0,80,175,0.9)]
+ hover:bg-black text-white px-8 py-4 rounded-xl font-bold text-lg h-auto backdrop-blur-md hover:text-blue-300 transition-all duration-300 ease-in-out">
               <Globe className="w-5 h-5" />
               Interactive Map
             </Button>
@@ -70,17 +71,17 @@ const StatItem = ({ number, label }) => (
     <span className="text-2xl md:text-3xl font-bold text-white mb-1">{number}</span>
     <span className="text-xs md:text-sm text-gray-500 uppercase tracking-widest">{label}</span>
   </div>
-);  
+);
 
 const RocketIcon = ({ className }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
