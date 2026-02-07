@@ -46,8 +46,8 @@ const Hero = () => {
               Launch Tracker
               <RocketIcon className="w-5 h-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
             </Button>
-            <Button variant="outline" className="bg-white/5 border-white/10 hover:shadow-[0_0_40px_rgba(0,240,255,0.9)]
- hover:bg-black text-white hover:border-blue-400 px-8 py-4 rounded-xl font-bold text-lg h-auto backdrop-blur-md hover:text-blue-800">
+            <Button variant="outline" className="bg-white/5 border-white/10 hover:shadow-[8px_0_30px_rgba(0,80,175,0.9)]
+ hover:bg-black text-white px-8 py-4 rounded-xl font-bold text-lg h-auto backdrop-blur-md hover:text-blue-300 transition-all duration-300 ease-in-out">
               <Globe className="w-5 h-5" />
               Interactive Map
             </Button>

@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold text-white mb-4">Cosmic Watch</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">SkyNetics</h3>
             <p className="text-gray-400 max-w-md">
               Democratizing space data access. A full-stack platform for real-time Near-Earth Object monitoring and risk analysis.
               Built for the Hackathon.
@@ -39,7 +39,7 @@ const Footer = () => {
         <Separator className="bg-white/10" />
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">
-            © 2026 Cosmic Watch. All rights reserved. Data provided by NASA NeoWs API.
+            © 2026 SkyNetics. All rights reserved. Data provided by NASA NeoWs API.
           </p>
           <div className="flex gap-2">
             <Button variant="ghost" size="icon" asChild className="text-gray-500 hover:text-white hover:bg-transparent">
