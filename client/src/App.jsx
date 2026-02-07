@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
+import NotFoundPage from './pages/NotFoundPage'
 import { Toaster } from './components/ui/sonner'
 import { useAuth } from './context/AuthContext'
 
@@ -29,6 +30,7 @@ function App() {
             <Profile />
           </ProtectedRoute>
         } />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   )
