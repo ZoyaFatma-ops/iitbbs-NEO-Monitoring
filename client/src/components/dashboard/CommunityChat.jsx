@@ -16,6 +16,7 @@ const CommunityChat = () => {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
+    const [isConnected, setIsConnected] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Scroll to bottom of chat
@@ -28,6 +29,9 @@ const CommunityChat = () => {
     }, [messages]);
 
     useEffect(() => {
+        let isSubscribed = true;
+        let channel = null;
+
         // Fetch initial messages
         const fetchMessages = async () => {
             try {
@@ -38,35 +42,86 @@ const CommunityChat = () => {
                     .limit(50);
 
                 if (error) throw error;
-                setMessages(data || []);
+                if (isSubscribed) {
+                    setMessages(data || []);
+                }
             } catch (error) {
                 console.error('Error fetching messages:', error);
-                toast.error('Failed to load messages');
+                if (isSubscribed) {
+                    toast.error('Failed to load messages: ' + error.message);
+                }
             } finally {
-                setLoading(false);
+                if (isSubscribed) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchMessages();
 
-        // Subscribe to real-time changes
-        const channel = supabase
-            .channel('public:messages')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'messages',
-                },
-                (payload) => {
-                    setMessages((prev) => [...prev, payload.new]);
-                }
-            )
-            .subscribe();
+        // Subscribe to real-time changes with a small delay to avoid race conditions
+        const setupRealtimeSubscription = () => {
+            if (!isSubscribed) return;
+
+            console.log('Setting up Supabase Realtime subscription...');
+            channel = supabase
+                .channel('messages-realtime-' + Date.now())
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'messages',
+                    },
+                    (payload) => {
+                        if (!isSubscribed) return;
+                        console.log('New message received via realtime:', payload);
+                        setMessages((prev) => {
+                            // Prevent duplicates if we already added it optimistically
+                            const exists = prev.some(msg => msg.id === payload.new.id);
+                            if (exists) {
+                                console.log('Message already exists, skipping duplicate');
+                                return prev;
+                            }
+                            return [...prev, payload.new];
+                        });
+                    }
+                )
+                .subscribe((status, err) => {
+                    if (!isSubscribed) return;
+                    console.log('Subscription status:', status, err || '');
+                    setIsConnected(status === 'SUBSCRIBED');
+
+                    if (status === 'SUBSCRIBED') {
+                        console.log('Successfully subscribed to messages channel');
+                    }
+                    if (status === 'CHANNEL_ERROR') {
+                        console.error('Realtime channel error:', err);
+                        toast.error('Realtime connection failed. Please check if Realtime is enabled in your Supabase project.');
+                    }
+                    if (status === 'TIMED_OUT') {
+                        console.error('Realtime connection timed out - retrying...');
+                        // Retry after timeout
+                        setTimeout(() => {
+                            if (isSubscribed && channel) {
+                                supabase.removeChannel(channel);
+                                setupRealtimeSubscription();
+                            }
+                        }, 2000);
+                    }
+                });
+        };
+
+        // Small delay to let React Strict Mode cleanup finish
+        const timeoutId = setTimeout(setupRealtimeSubscription, 100);
 
         return () => {
-            supabase.removeChannel(channel);
+            isSubscribed = false;
+            clearTimeout(timeoutId);
+            if (channel) {
+                console.log('Cleaning up Supabase channel...');
+                supabase.removeChannel(channel);
+            }
         };
     }, []);
 
@@ -77,7 +132,7 @@ const CommunityChat = () => {
 
         setSending(true);
         try {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('messages')
                 .insert([
                     {
@@ -85,13 +140,18 @@ const CommunityChat = () => {
                         user_id: session.user.id,
                         user_email: session.user.email,
                     },
-                ]);
+                ])
+                .select()
+                .single();
 
             if (error) throw error;
+
+            // Optimistically add message to UI
+            setMessages((prev) => [...prev, data]);
             setNewMessage('');
         } catch (error) {
             console.error('Error sending message:', error);
-            toast.error('Failed to send message');
+            toast.error('Failed to send: ' + error.message);
         } finally {
             setSending(false);
         }
@@ -111,7 +171,7 @@ const CommunityChat = () => {
     };
 
     return (
-        <Card className="bg-white/5 border-white/10 backdrop-blur-md h-full flex flex-col">
+        <Card className="bg-white/5 border-white/10 backdrop-blur-md h-[calc(100vh-180px)] min-h-[500px] flex flex-col">
             <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
@@ -120,13 +180,19 @@ const CommunityChat = () => {
                     </CardTitle>
                     <Badge
                         variant="outline"
-                        className="bg-green-500/20 border-green-500/50 text-green-400 gap-1"
+                        className={`border-opacity-50 gap-1 ${isConnected
+                            ? 'bg-green-500/20 border-green-500 text-green-400'
+                            : 'bg-red-500/20 border-red-500 text-red-400'
+                            }`}
                     >
                         <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            {isConnected && (
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            )}
+                            <span className={`relative inline-flex rounded-full h-2 w-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'
+                                }`}></span>
                         </span>
-                        Live
+                        {isConnected ? 'Live' : 'Offline'}
                     </Badge>
                 </div>
             </CardHeader>
@@ -182,8 +248,8 @@ const CommunityChat = () => {
                                         </div>
                                         <div
                                             className={`p-3 rounded-lg text-sm max-w-[85%] break-words ${isCurrentUser
-                                                    ? 'bg-cyan-500/20 text-cyan-50 border border-cyan-500/30 rounded-tr-none'
-                                                    : 'bg-white/10 text-gray-300 border border-white/5 rounded-tl-none'
+                                                ? 'bg-cyan-500/20 text-cyan-50 border border-cyan-500/30 rounded-tr-none'
+                                                : 'bg-white/10 text-gray-300 border border-white/5 rounded-tl-none'
                                                 }`}
                                         >
                                             {msg.content}
@@ -211,8 +277,8 @@ const CommunityChat = () => {
                             size="sm"
                             disabled={!newMessage.trim() || sending}
                             className={`h-7 w-7 p-0 ${newMessage.trim()
-                                    ? 'bg-cyan-500 hover:bg-cyan-600 text-black'
-                                    : 'bg-white/10 text-gray-500 hover:bg-white/20'
+                                ? 'bg-cyan-500 hover:bg-cyan-600 text-black'
+                                : 'bg-white/10 text-gray-500 hover:bg-white/20'
                                 }`}
                         >
                             {sending ? (
