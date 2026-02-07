@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const verifySupabase = require('./middleware/verifySupabase');
 const errorHandler = require('./middleware/errorHandler');
 const { NotFoundError } = require('./errors/appError');
+const neoRoutes = require('./routes/neoRoutes');
 
 dotenv.config();
 
@@ -35,6 +36,9 @@ app.get('/api/me', verifySupabase, (req, res) => {
     user: req.supabaseUser,
   });
 });
+
+// NEO data routes
+app.use('/api/neos', neoRoutes);
 
 // 404 handler for unmatched routes
 app.use((req, res, next) => {
