@@ -29,13 +29,18 @@ const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password
       });
 
       if (error) {
         return { success: false, error: error.message };
+      }
+
+      // Supabase returns a fake user with empty identities when email already exists
+      if (data?.user?.identities?.length === 0) {
+        return { success: false, error: "An account with this email already exists" };
       }
 
       return { success: true };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Rocket, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import StarBackground from '../components/landingPage/StarBackground';
@@ -20,10 +20,11 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   // If already logged in, redirect
-  if (session) {
-    navigate('/home', { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (session) {
+      navigate('/home', { replace: true });
+    }
+  }, [session, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,10 +43,8 @@ const AuthPage = () => {
     setSubmitting(false);
 
     if (result.success) {
-      toast.success(isLogin ? 'Welcome back, Explorer!' : 'Account created! Check your email to confirm.');
-      if (isLogin) {
-        navigate('/home');
-      }
+      toast.success(isLogin ? 'Welcome back, Explorer!' : 'Account created successfully!');
+      navigate('/home');
     } else {
       toast.error(result.error || 'Something went wrong');
     }
@@ -153,7 +152,7 @@ const AuthPage = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full mt-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-cyan-900/20 transform hover:scale-[1.02] active:scale-[0.98] h-auto disabled:opacity-50 disabled:pointer-events-none"
+                className="w-full mt-4 bg-linear-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-cyan-900/20 transform hover:scale-[1.02] active:scale-[0.98] h-auto disabled:opacity-50 disabled:pointer-events-none"
               >
                 {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -176,9 +175,9 @@ const AuthPage = () => {
               <Button
                 variant="outline"
                 onClick={handleGoogle}
-                className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 gap-2 px-6 text-gray-300"
+                className="bg-white/5 border-white/10 hover:bg-white/80 hover:border-white/20 gap-2 px-6 text-gray-300"
               >
-                <img src="https://www.svgrepo.com/show/475647/google-color.svg" className="h-5 w-5" alt="Google" />
+                <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
                 Google
               </Button>
             </div>
