@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {  AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
     Radar,
@@ -38,7 +38,7 @@ const Sidebar = ({ activeView, setActiveView, user }) => {
         >
             {/* Logo */}
             <div className="p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500 to-purple-600 flex items-center justify-center shrink-0">
                     <Rocket className="w-6 h-6 text-white" />
                 </div>
                 <AnimatePresence>
@@ -47,7 +47,7 @@ const Sidebar = ({ activeView, setActiveView, user }) => {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -10 }}
-                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500"
+                            className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-purple-500"
                         >
                             SkyNetics
                         </motion.span>
@@ -73,7 +73,7 @@ const Sidebar = ({ activeView, setActiveView, user }) => {
                                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                            <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-cyan-400' : ''}`} />
+                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-cyan-400' : ''}`} />
                             <AnimatePresence>
                                 {!collapsed && (
                                     <motion.span
@@ -104,7 +104,7 @@ const Sidebar = ({ activeView, setActiveView, user }) => {
                 <div className={`flex items-center gap-3 p-2 rounded-xl bg-white/5 ${collapsed ? 'justify-center' : ''}`}>
                     <Avatar className="w-10 h-10 border-2 border-cyan-500/50">
                         <AvatarImage src={user?.avatar} />
-                        <AvatarFallback className="bg-gradient-to-br from-cyan-600 to-purple-600 text-white font-bold">
+                        <AvatarFallback className="bg-linear-to-br from-cyan-600 to-purple-600 text-white font-bold">
                             {user?.name?.charAt(0) || 'U'}
                         </AvatarFallback>
                     </Avatar>
