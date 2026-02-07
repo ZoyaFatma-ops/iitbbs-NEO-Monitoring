@@ -76,7 +76,7 @@ const AuthPage = () => {
             <div className="relative z-10">
               <Link to="/" className="flex items-center gap-2 cursor-pointer group w-fit">
                 <Rocket className="h-6 w-6 text-cyan-500 group-hover:text-cyan-400 transition-colors" />
-                <span className="text-xl font-bold text-white">Cosmic Watch</span>
+                <span className="text-xl font-bold text-white">SkyNetics</span>
               </Link>
             </div>
 
@@ -102,7 +102,7 @@ const AuthPage = () => {
                 {isLogin ? 'Sign In' : 'Create Account'}
               </h3>
               <div className="text-sm text-gray-400 flex items-center justify-center md:justify-start gap-2">
-                {isLogin ? 'New to Cosmic Watch?' : 'Already have an account?'}
+                {isLogin ? 'New to SkyNetics?' : 'Already have an account?'}
                 <Button
                   variant="link"
                   onClick={() => setIsLogin(!isLogin)}
